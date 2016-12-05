@@ -1,4 +1,5 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,13 +28,13 @@ public class ParagraphDecorator {
 		return paragraphDecorator;
 	}
 	
-	private String[] splitElement(String input, Pattern pattern) {
+	private List<String> splitElement(String input, Pattern pattern) {
 		if (input == null) {
 			return null;
 		}
 
 		int startIndex = 0;
-		LinkedList<String> splittedElements = new LinkedList<String>();
+		List<String> splittedElements = new ArrayList<>();
 		
 		Matcher matcher = pattern.matcher(input);
 		
@@ -51,27 +52,27 @@ public class ParagraphDecorator {
 			splittedElements.add(line);
 		}
 
-		return splittedElements.toArray(new String[splittedElements.size()]);
+		return splittedElements;
 	}
 	
 	public String process(String input) {
-		String output = "";
-		String[] splitedByDomTagElements = splitElement(input, domElementPattern);
+		StringBuilder output = new StringBuilder();
+		List<String> splitedByDomTagElements = splitElement(input, domElementPattern);
 		
 		for(String element : splitedByDomTagElements) {
 			if(element.startsWith("<")) {
-				output += element;
+				output.append(element);
 			} else {
-				String[] splitedByHashTagElements = splitElement(element, hashTagPattern);
+				List<String> splitedByHashTagElements = splitElement(element, hashTagPattern);
 				for(String tag : splitedByHashTagElements) {
 					if(tag.startsWith("#") && !tag.equals("#")) {
-						output += HASH_OPENING_TAG + tag + HASH_CLOSING_TAG;
+						output.append(HASH_OPENING_TAG + tag + HASH_CLOSING_TAG);
 					} else {
-						output += tag;
+						output.append(tag);
 					}
 				}
 			}
 		}
-		return output;
+		return output.toString();
 	}
 }
